@@ -46,7 +46,11 @@ const Games = () => {
                                     <td>{game.game_type}</td>
                                     <td>{game.first_player.name}</td>
                                     <td>{game.second_player.name}</td>
-                                    <td><button onClick={() => router.push(`/championships/${championshipId}/games/${game._id}`)}>Join</button></td>
+                                    <td>
+                                        {
+                                            game.status === "Started" && <button onClick={() => router.push(`/championships/${championshipId}/games/${game._id}`)}>Join</button>
+                                        }
+                                    </td>
                                 </tr>
                             ))
                         : null
