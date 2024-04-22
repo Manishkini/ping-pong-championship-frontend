@@ -21,7 +21,9 @@ const SingleChampionshipRefereeView = () => {
             return router.push(`/championships/${championshipId}/games`)
         }
       } catch(error) {
-          console.log('error', error)
+          if(error.message == 401) {
+            logout();
+          }
       }
     }
 

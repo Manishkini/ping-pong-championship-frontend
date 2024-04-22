@@ -15,7 +15,9 @@ export default function Championships() {
             console.log('response', response)
             setPlayers(response.players)
         } catch(error) {
-            console.log('error', error)
+            if(error.message == 401) {
+                logout();
+            }
         }
     }
 

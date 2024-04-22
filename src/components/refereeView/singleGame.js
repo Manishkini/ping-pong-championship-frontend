@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { get } from "@/utils/api";
 import { socket } from "@/utils/socket";
+import { Avatar, Button, Flex } from "antd";
 
 const SingleGame = () => {
     const router = useRouter();
@@ -13,6 +14,8 @@ const SingleGame = () => {
     const [attackerObj, setAttackerObj] = useState({});
     const [defenseObj, setDefenseObj] = useState({});
     const [buttonEnable, setButtonEnable] = useState(false);
+    const [firstPlayerWon, setFirstPlayerWon] = useState(0);
+    const [secondPlayerWon, setSecondPlayerWon] = useState(0);
 
     const fetchGame = async (gameId) => {
         try {
@@ -21,7 +24,9 @@ const SingleGame = () => {
             setGame(response.game)
             fetchRound(gameId)
         } catch(error) {
-            console.log('error', error)
+            if(error.message == 401) {
+                logout();
+            }
         }
     }
 
@@ -30,63 +35,91 @@ const SingleGame = () => {
             const response = await get(`/point/${gameId}/lastRound`);
             console.log('response', response)
             setLastPoint(response?.point)
+            setFirstPlayerWon(response?.total_win_first)
+            setSecondPlayerWon(response?.total_win_second)
         } catch(error) {
-            console.log('error', error)
+            if(error.message == 401) {
+                logout();
+            }
         }
     }
 
     const declareWinner = async () => {
         try {
-            const response = await get(`/point/${gameId}/roundWinner/${lastPoint.round_number}`);
+            const response = await get(`/point/${gameId}/${lastPoint._id}/winner`);
             console.log('response', response)
-            setLastPoint(response?.point)
+            fetchGame(gameId)
+            setButtonEnable(false)
+            setAttackerObj({})
+            setDefenseObj({})
         } catch(error) {
-            console.log('error', error)
+            if(error.message == 401) {
+                logout();
+            }
         }
     }
 
     useEffect(() => {
         if(championshipId && gameId) {
             fetchGame(gameId);
+            socket.on(`${gameId}`, (data) => {
+                console.log('data', data)
+                if(data.for === "Referee") {
+                    console.log(`${gameId}`, data)
+                    if(data.role === 'Attacker') {
+                        setAttackerObj(data)
+                    } else if(data.role === 'Defense') {
+                        setDefenseObj(data)
+                    }
+                }
+            })
+        }
+
+        return () => {
+            console.log("removed")
+            socket.removeListener(`${championshipId}`)
         }
     }, [championshipId, gameId])
 
     useEffect(() => {
-        if(attackerObj?._id && defenseObj?._id) {
+        if(attackerObj?.attack_player_id && defenseObj?.defense_player_id) {
             setButtonEnable(true)
         }
     }, [attackerObj, defenseObj])
-
+    console.log('lastPoint', lastPoint)
     return (
         <div>
             <div className="w-full flex flex-col h-screen">
-                <div className="flex flex-row justify-center">
+                <Flex vertical gap="middle" align="center" justify="center">
                     <span>Round Number {lastPoint ? lastPoint.round_number : 1}</span>
-                </div>
+                        {
+                            lastPoint?.round_winner 
+                            ? lastPoint?.round_winner === game?.first_player?._id 
+                                ? <span>{game?.first_player?.name} Won The Game</span>
+                                : <span>{game?.second_player?.name} Won The Game</span>
+                            : null
+                        }
+                </Flex>
                 <div className="w-3/4 m-auto mt-48">
-                    <div className="flex flex-row justify-center gap-80">
-                        <div className="h-48 w-48 bg-black">
-
-                        </div>
-
-                        <div className="h-48 w-48 bg-black">
-
-                        </div>
-                    </div>
-                    <div className="flex flex-row justify-center gap-80">
-                        <div className="w-48 bg-white text-center">
-                            <span>{game?.first_player?.name}</span>
-                        </div>
-                        <div className="w-48 bg-white text-center">
-                            <span>{game?.second_player?.name}</span>
-                        </div>
-                    </div>
+                    <Flex gap={100} align="center" justify="center">
+                        <Avatar size={200}>
+                            {`${game?.first_player?.name} : ${firstPlayerWon}`}
+                        </Avatar>
+                        <Avatar shape="square" style={{ backgroundColor: '#fde3cf', color: '#f56a00' }}>VS</Avatar>
+                        <Avatar size={200}>
+                            {`${game?.second_player?.name} : ${secondPlayerWon}`}
+                        </Avatar>
+                    </Flex>
                 </div>
-                <div className="w-full h-32 fixed bottom-0">
-                    <div className="flex flex-row justify-center m-16">
-                        <button className="w-32 h-10 bg-black text-white" onClick={declareWinner}>Declare Winner</button>
+
+                {
+                    !lastPoint?.round_winner && 
+                    <div className="w-full h-32 fixed bottom-0">
+                        <div className="flex flex-row justify-center m-16">
+                            <Button type="primary" disabled={!buttonEnable} onClick={declareWinner}>Declare Winner</Button>
+                        </div>
                     </div>
-                </div>
+                }
             </div>
         </div>
     )

@@ -15,7 +15,9 @@ const Games = () => {
             console.log('response', response)
             setGames(response.games)
         } catch(error) {
-            console.log('error', error)
+            if(error.message == 401) {
+                logout();
+            }
         }
     }
 
@@ -25,7 +27,9 @@ const Games = () => {
             console.log('response', response)
             router.push(`/championships/${championshipId}/games/${game_id}`)
         } catch(error) {
-            console.log('error', error)
+            if(error.message == 401) {
+                logout();
+            }
         }
     }
 

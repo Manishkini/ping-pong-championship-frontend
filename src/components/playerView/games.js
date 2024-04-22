@@ -15,13 +15,22 @@ const Games = () => {
             console.log('response', response)
             setGames(response.games)
           } catch(error) {
-              console.log('error', error)
+                if(error.message == 401) {
+                    logout();
+                }
           }
     }
 
     useEffect(() => {
         if(championshipId) {
             fetchGames(championshipId)
+            socket.on(`${championshipId}`, (data) => {
+                fetchGames(championshipId);
+            })
+        }
+
+        return () => {
+            socket.removeListener(`${championshipId}`)
         }
     }, [championshipId])
 

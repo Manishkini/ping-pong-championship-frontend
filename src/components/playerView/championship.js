@@ -10,7 +10,9 @@ const PlayerViewChampionship = ({ championships, user }) => {
             const response = await get(`/championship/${championshipId}/join/${playerId}`);
             console.log('response', response)
         } catch(error) {
-            console.log('error', error)
+            if(error.message == 401) {
+                logout();
+            }
         }
     }
 

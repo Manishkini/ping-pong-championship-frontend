@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import RefereeViewChampionship from '@/components/refereeView/championship'
 import PlayerViewChampionship from '@/components/playerView/championship'
+import { logout } from "@/utils";
 
 export default function Championships() {
 
@@ -14,9 +15,11 @@ export default function Championships() {
         try{
             const response = await get('/championship');
             console.log('response', response)
-            setChampionships(response.championship)
+            setChampionships(response?.championship)
         } catch(error) {
-            console.log('error', error)
+            if(error.message == 401) {
+                logout();
+            }
         }
     }
 

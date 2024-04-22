@@ -23,7 +23,9 @@ const SingleChampionshipRefereeView = () => {
         setPlayers(response.championship.players)
         setAllPlayersJoined(checkAllJoined(response.championship.players))
       } catch(error) {
-          console.log('error', error)
+        if(error.message == 401) {
+          logout();
+      }
       }
     }
 
@@ -32,7 +34,9 @@ const SingleChampionshipRefereeView = () => {
             const response = await get(`/championship/${championshipId}/invite`);
             fetchSingleChampionship(championshipId);
         } catch(error) {
-            console.log('error', error)
+          if(error.message == 401) {
+            logout();
+        }
         }
     }
 
@@ -42,7 +46,9 @@ const SingleChampionshipRefereeView = () => {
           const response = await get(`/championship/${championshipId}/start`);
           router.push(`/championships/${championshipId}/games`)
         } catch(error) {
-            console.log('error', error)
+          if(error.message == 401) {
+            logout();
+        }
         }
     }
 
