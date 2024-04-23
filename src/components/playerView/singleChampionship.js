@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { get } from "@/utils/api";
 import { socket } from "@/utils/socket";
+import { Button, Flex, Table } from "antd";
 
 const SingleChampionshipRefereeView = () => {
     const router = useRouter();
@@ -58,39 +59,37 @@ const SingleChampionshipRefereeView = () => {
       }
     }, [championshipId])
 
+    const columns = [
+      {
+        title: 'Player Name',
+        dataIndex: 'player_name',
+        key: 'player_name',
+      },
+      {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+      },
+    ]
+
     return (
       <div className="w-full">
-        <div className="w-1/3">
-          <div className="flex flex-col justify-center">
+        <div className="w-1/3 m-auto">
+          <div className="flex flex-row justify-around p-10">
             <div> 
-              <strong>Championship Name :</strong> 
-              <span>{name}</span>
+              <span>Championship Name :</span> 
+              <strong>{name}</strong>
             </div>
             <div> 
-              <strong>Championship Status :</strong> 
-              <span>{status}</span>
+              <span>Championship Status :</span> 
+              <strong>{status}</strong>
             </div>
           </div>
-          <div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  players?.length && players.map((player) => (
-                    <tr key={player.player_id}>
-                      <td>{player.player_name}</td>
-                      <td>{player.status}</td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
+          <Flex vertical gap="large" align="center" justify="center">
+            <Table columns={columns} dataSource={players} pagination={{
+              hideOnSinglePage: true
+            }} />
+          </Flex>
         </div>
       </div>
     );

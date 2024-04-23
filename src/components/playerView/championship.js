@@ -26,11 +26,11 @@ const PlayerViewChampionship = ({ championships, user }) => {
 
     return (
         <div>
-            <section className='grid grid-cols-4 gap-4'>
+            <section className='grid grid-cols-4 gap-4 mt-10'>
                 {
                     championships?.length 
                     ?   championships.map((obj) => (
-                            <div className='w-48 h-48 bg-slate-400 text-center' key={obj._id}>
+                            <div className='w-48 h-48 bg-slate-400 text-center p-10' key={obj._id}>
                                 <div className=''>{obj.name}</div>
                                 <div className=''>{`Status: ${obj.status}`}</div>
                                 {

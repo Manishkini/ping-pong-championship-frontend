@@ -131,7 +131,7 @@ const SingleGame = ({ user }) => {
                             type: 'success',
                             content: 'You won the round',
                           });
-                    } else {
+                    } else if(data.round_winner !== user._id) {
                         messageApi.open({
                             type: 'error',
                             content: 'You lost the round',
@@ -152,7 +152,6 @@ const SingleGame = ({ user }) => {
         }
     }, [game, user])
 
-    console.log("myObject", myObject)
     return (
         <div>
             {contextHolder}

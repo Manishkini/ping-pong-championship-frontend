@@ -2,6 +2,7 @@ import { get } from "@/utils/api";
 import { useEffect, useState } from "react";
 import { post } from "@/utils/api";
 import { useRouter } from "next/router";
+import { Button, Input } from "antd";
 
 export default function Championships() {
     const router = useRouter();
@@ -39,35 +40,14 @@ export default function Championships() {
     }
 
     return (
-      <div>
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label htmlFor="name">Championship Name</label>
-                <input type="text" name="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter Championship Name"/>
-            </div>
-            <div>
-                <label htmlFor="players">Players</label>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Link</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            players?.length && players.map((player) => (
-                                <tr key={player._id}>
-                                    <td>{player.name}</td>
-                                </tr>
-                            ))
-                        }
-                    </tbody>
-                </table>
+      <div className="w-full mt-20">
+        <div className="w-1/3 m-auto flex flex-col gap-10" >
+            <div className="flex flex-row justify-center">
+                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter Championship Name"/>
             </div>
 
-            <button type="submit">Send Invite</button>
-        </form>
+            <Button type="primary" onClick={handleSubmit}>Send Invite</Button>
+        </div>
       </div>
     );
 }

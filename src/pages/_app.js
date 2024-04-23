@@ -38,7 +38,6 @@ export default function App({ Component, pageProps }) {
           {
             type === 'referee' || type === 'player' 
             ? <div className="nav">
-                <Link href="/">Home</Link>
                 <Link href="/championships">Championships</Link>
                 <Link href="#" onClick={handleLogout}>Logout</Link>
               </div>
